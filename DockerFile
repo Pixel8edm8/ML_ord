@@ -1,0 +1,57 @@
+#syntax=docker/dockerfile:1
+#check=error=true
+FROM ubuntu:latest
+# TODO: Make separate build stages for a development environment and a "release" environment.
+WORKDIR /home/ubuntu/Project/
+COPY . ./
+COPY Rgb_1.7.8.tar.gz ./
+COPY cghRA_1.7.2.tar.gz ./
+
+# Install Python 3.7, R, and necessary C/C++ system dependencies for R packages
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+--mount=type=cache,target=/var/lib/apt,sharing=locked \
+apt update && \
+    apt install -y --no-install-recommends \
+    software-properties-common \
+    r-base \
+    r-base-dev \
+    build-essential \
+    g++ \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev && \
+    git \
+    git-lfs \
+    add-apt-repository ppa:deadsnakes/ppa && apt update && \
+    apt install -y --no-install-recommends python3.7 python3.7-dev python3.7-venv && \
+    apt clean
+
+# Install Bioconductor and local packages
+RUN --mount=type=cache,target=/usr/local/lib/R/site-library,sharing=locked \
+Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocManager', repos='http://cran.us.r-project.org'); BiocManager::install('DNAcopy')" && \
+Rscript -e "install.packages('Rgb_1.7.8.tar.gz', repos=NULL, type='source')" && \
+Rscript -e "install.packages('cghRA_1.7.2.tar.gz', repos=NULL, type='source')" && \
+Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocManager', repos='http://cran.us.r-project.org'); BiocManager::install(c('Biobase', 'genefilter', 'lmQCM', 'readxl', 'dplyr', 'stringr', 'ggplot2', 'data.table'))"
+# Install CRAN packages with an explicit repository URL
+# Setup Python virtual environment
+RUN python3.7 -m venv .venv
+RUN --mount=type=cache,target=/home/ubuntu/Project/.venv/lib/python3.7/site-packages,sharing=locked \
+ /home/ubuntu/Project/.venv/bin/pip install --no-cache-dir wheel pandas numpy keras torch tensorflow scikit-learn lifelines scikeras pytensor
+ENV PATH="/home/ubuntu/Project/.venv/bin:$PATH"
+
+# Development environment bash access
+WORKDIR /home/ubuntu/Project/mRNA_methylation_merged/
+
+# RUN Rscript ./mRNA_data/run_test_lmQCM_mRNA.R
+# RUN Rscript ./methylation_data/run_test_lmQCM_brca_methylation.R
+# RUN Rscript ./methylation-mRNA_all_lmQCM_merge.r
+# RUN cp brca_Surv_data_methylation* ../survival_analysis/
+# WORKDIR /home/ubuntu/Project/survival_analysis
+CMD ["tail", "-f", "/dev/null"]
