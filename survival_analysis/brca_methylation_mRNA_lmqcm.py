@@ -20,9 +20,9 @@ from keras.layers import Dense
 import tensorflow as tf
 from keras.optimizers import Adam
 import matplotlib.pyplot as plt
-from keras.wrappers.scikit_learn import KerasRegressor
+from scikeras.wrappers import KerasRegressor
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
-import theano
+import pytensor
 from keras.layers import Dropout, Activation, Lambda
 from keras import backend as K
 from keras.layers.normalization import BatchNormalization
@@ -30,7 +30,7 @@ from keras.layers import LSTM, Input,Embedding
 
 from keras.layers import TimeDistributed
 from keras.layers import Bidirectional
-from keras.wrappers.scikit_learn import KerasRegressor,KerasClassifier
+from scikeras.wrappers import KerasRegressor,KerasClassifier
 from lifelines.utils import concordance_index
 from keras.models import Model
 from keras.initializers import glorot_uniform

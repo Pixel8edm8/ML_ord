@@ -1,5 +1,4 @@
-
-# setwd("C:/2020download/lmQCM-master/tests")
+setwd("/home/Ubuntu/Project/mRNA_methylation_merged/methylation_data/")
 ################################################1. ??????R??????????????????
 rm(list = ls())
 library(lmQCM)
