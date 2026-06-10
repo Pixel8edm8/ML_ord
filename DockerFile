@@ -3,14 +3,11 @@
 FROM ubuntu:latest
 # TODO: Make separate build stages for a development environment and a "release" environment.
 WORKDIR /home/ubuntu/Project/
-COPY . ./
-COPY Rgb_1.7.8.tar.gz ./
-COPY cghRA_1.7.2.tar.gz ./
-
+ADD https://github.com/Pixel8edm8/ML_ord.git .
 # Install Python 3.7, R, and necessary C/C++ system dependencies for R packages
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 --mount=type=cache,target=/var/lib/apt,sharing=locked \
-apt update && \
+    apt update && \
     apt install -y --no-install-recommends \
     software-properties-common \
     r-base \
@@ -26,13 +23,12 @@ apt update && \
     libfreetype6-dev \
     libpng-dev \
     libtiff5-dev \
-    libjpeg-dev && \
+    libjpeg-dev \
     git \
-    git-lfs \
+    git-lfs && \
     add-apt-repository ppa:deadsnakes/ppa && apt update && \
     apt install -y --no-install-recommends python3.7 python3.7-dev python3.7-venv && \
     apt clean
-
 # Install Bioconductor and local packages
 RUN --mount=type=cache,target=/usr/local/lib/R/site-library,sharing=locked \
 Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocManager', repos='http://cran.us.r-project.org'); BiocManager::install('DNAcopy')" && \
@@ -43,7 +39,7 @@ Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocM
 # Setup Python virtual environment
 RUN python3.7 -m venv .venv
 RUN --mount=type=cache,target=/home/ubuntu/Project/.venv/lib/python3.7/site-packages,sharing=locked \
- /home/ubuntu/Project/.venv/bin/pip install --no-cache-dir wheel pandas numpy keras torch tensorflow scikit-learn lifelines scikeras pytensor
+ /home/ubuntu/Project/.venv/bin/pip install -r /home/ubuntu/Project/requirements.txt
 ENV PATH="/home/ubuntu/Project/.venv/bin:$PATH"
 
 # Development environment bash access
