@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  mlord_machine:
+    image: mlordcox
+    build: .
+    volumes:
+      - ./:/home/ubuntu/Project/

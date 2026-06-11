@@ -1,7 +1,6 @@
 *.jpg
 *.png
 *.pyc
-
 *.docx
 *.pdf
 .Rproj.user
