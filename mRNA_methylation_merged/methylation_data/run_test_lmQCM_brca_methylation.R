@@ -1,4 +1,4 @@
-setwd("/home/Ubuntu/Project/mRNA_methylation_merged/methylation_data/")
+setwd('/home/ubuntu/Project/mRNA_methylation_merged/methylation_data/')
 ################################################1. ??????R??????????????????
 rm(list = ls())
 library(lmQCM)

@@ -1,4 +1,4 @@
-# setwd("C:/2020download/00000000lmQCM-master/tests")
+setwd("/home/ubuntu/Project/mRNA_methylation_merged/")
 
 #install.packages("cghRA")
 

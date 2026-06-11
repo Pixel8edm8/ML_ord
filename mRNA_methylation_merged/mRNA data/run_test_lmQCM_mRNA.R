@@ -1,4 +1,4 @@
-setwd("/home/ubuntu/Project/mRNA_methylation_merged/mRNA_data/")
+setwd('/home/ubuntu/Project/mRNA_methylation_merged/mRNA data')
 
 # setwd("")
 ################################################1. ??????R??????????????????

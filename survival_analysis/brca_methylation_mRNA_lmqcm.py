@@ -25,7 +25,7 @@ from sklearn.model_selection import train_test_split, KFold, cross_val_score
 import pytensor
 from keras.layers import Dropout, Activation, Lambda
 from keras import backend as K
-from keras.layers.normalization import BatchNormalization
+from keras.layers import BatchNormalization
 from keras.layers import LSTM, Input,Embedding
 
 from keras.layers import TimeDistributed
