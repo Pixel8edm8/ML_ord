@@ -1,6 +1,6 @@
 #syntax=docker/dockerfile:1
 #check=error=true
-FROM ubuntu:22.04
+FROM python:3.7
 # TODO: Make separate build stages for a development environment and a "release" environment.
 WORKDIR /home/ubuntu/Project/ML_ordCOX/
 COPY requirements.txt ./
@@ -28,23 +28,13 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     libjpeg-dev \
     git \
     git-lfs && \
-    add-apt-repository ppa:deadsnakes/ppa && apt update && \
-    apt install -y --no-install-recommends python3.7 python3.7-dev python3.7-venv && \
     apt clean
 RUN git lfs install
 # Install Bioconductor and local packages
-RUN --mount=type=cache,target=/usr/local/lib/R/site-library,sharing=locked \ 
-Rscript -e "install.packages('renv')" && \
-Rscript -e "renv::init()" && Rscript -e 'options(repos = c(CRAN = "https://packagemanager.posit.co/cran/2020-08-07"))'
-RUN --mount=type=cache,target=/usr/local/lib/R/site-library,sharing=locked \
-Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocManager'); BiocManager::install('DNAcopy')" && \
-Rscript -e "install.packages('Rgb_1.7.8.tar.gz', repos=NULL, type='source')" && \
-Rscript -e "install.packages('cghRA_1.7.2.tar.gz', repos=NULL, type='source')" && \
-Rscript -e "if (!require('BiocManager', quietly = TRUE)) install.packages('BiocManager'); BiocManager::install(c('Biobase', 'genefilter', 'lmQCM', 'readxl', 'dplyr', 'stringr', 'ggplot2', 'data.table'))" && \
-Rscript -e "renv::snapshot()"
+RUN Rscript -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/2020-08-07'), warn=2, renv.consent=TRUE); if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv'); renv::consent(provided=TRUE); renv::init(bioconductor="3.11"); renv::snapshot(prompt = FALSE)"
 # Install CRAN packages with an explicit repository URL
 # Setup Python virtual environment
-RUN python3.7 -m venv .venv
+RUN python -m venv .venv
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
 ./.venv/bin/pip install -r ./requirements.txt
 ENV PATH="/home/ubuntu/Project/ML_ordCOX/.venv/bin:$PATH"

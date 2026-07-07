@@ -14,7 +14,6 @@ import numpy as np
 import keras
 #from lifelines import CoxPHFitter
 #from lifelines.datasets import load_kidney_transplant
-
 from keras.models import Sequential
 from keras.layers import Dense
 import tensorflow as tf
@@ -22,7 +21,7 @@ from keras.optimizers import Adam
 import matplotlib.pyplot as plt
 from scikeras.wrappers import KerasRegressor
 from sklearn.model_selection import train_test_split, KFold, cross_val_score
-import pytensor
+import theano
 from keras.layers import Dropout, Activation, Lambda
 from keras import backend as K
 from keras.layers import BatchNormalization
@@ -42,11 +41,11 @@ from keras.layers import  Layer
 from sklearn.preprocessing import minmax_scale
 ##############################
 #kidtx = pd.read_csv('brca_Surv_data_stage_age.csv',usecols=['MEgreenyellow',	'MEgreen','MEturquoise'	,'MEmagenta','MEbrown',	'MEred',	'MEpink',	'MEblack',	'MEpurple',	'MEblue',	'MEyellow',	'MEgrey','erged_data5_stage','erged_data6_Age','V1','erged_data33'])
-kidtx = pd.read_csv('brca_Surv_data_methylation_mRNA_lmqcm.csv')
-dataX1 =kidtx.drop(["Unnamed: 0","ID","V1","erged_data33"], axis = 1).values
-y = np.transpose(np.array((kidtx["V1"], kidtx["erged_data33"]))) # V1=time; erged_data33=status
+# kidtx = pd.read_csv('brca_Surv_data_methylation_mRNA_lmqcm.csv')
+# dataX1 =kidtx.drop(["Unnamed: 0","ID","V1","erged_data33"], axis = 1).values
+# y = np.transpose(np.array((kidtx["V1"], kidtx["erged_data33"]))) # V1=time; erged_data33=status
 
-kidtx = pd.read_csv('brca_Surv_data_methylation_mRNA_all_lmqcm.csv')
+kidtx = pd.read_csv('C:/Users/Ethan/ML_ord/survival_analysis/brca_Surv_data_methylation_mRNA_all_lmqcm.csv')
 dataX1 =kidtx.drop(["Unnamed: 0","ID","V2.x","V3.x"], axis = 1).values
 y = np.transpose(np.array((kidtx["V2.x"], kidtx["V3.x"]))) # V1=time; erged_data33=status
 
@@ -801,7 +800,7 @@ for train_index, val_index in kf.split(x):
     print([np.exp(K.get_value(log_var[0]))**0.5 for log_var in model.layers[-1].log_vars])
     
 
-    prediction =predicted_main+0*predicted_aux
+    prediction = predicted_main+0*predicted_aux
     
     c_index2=c_index3( np.asarray(ytime_test),np.asarray(prediction), np.asarray(ystatus_test))
     

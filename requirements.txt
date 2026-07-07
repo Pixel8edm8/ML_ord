@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a548947f7f4034c1d13a6be4d0ea51d52175e3b8c9f20ba2f81ddb1a8ace8edf
-size 91
+wheel
+pandas
+numpy
+keras
+torch
+tensorflow
+scikit-learn
+lifelines
+scikeras
+theano
