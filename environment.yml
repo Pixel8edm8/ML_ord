@@ -1,0 +1,21 @@
+name: ML_ORD
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pandas
+  - numpy
+  - keras
+  - scikit-learn
+  - lifelines
+  - scikeras
+  - theano
+  - tensorflow
+  - anaconda
+  - libpython
+  - m2w64-toolchain
+  - matplotlib
+  - pip
+  - pip:
+    - torch
