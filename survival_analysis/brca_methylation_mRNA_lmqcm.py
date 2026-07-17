@@ -31,6 +31,7 @@ except ImportError:
     import tensorflow as tf1
 if hasattr(tf1, 'disable_v2_behavior'):
     tf1.disable_v2_behavior()
+from matplotlib import pylab
 ##############################
 kidtx = pd.read_csv('brca_Surv_data_methylation_mRNA_all_lmqcm.csv')
 dataX1 = kidtx.drop(["Unnamed: 0","ID","V2.x","V3.x"], axis = 1).values
