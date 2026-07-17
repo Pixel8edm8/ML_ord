@@ -8,3 +8,4 @@ renv
 *.pyc
 *.pyc
 settings.json
+.vscode

@@ -5,6 +5,7 @@
 *.pdf
 .Rproj.user
 .Rhistory
+.vscode
 ML_ordCOX.Rproj
 venv
 __pycache__
