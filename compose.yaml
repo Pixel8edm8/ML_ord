@@ -3,4 +3,4 @@ services:
     image: mlordcox
     build: .
     volumes:
-      - ./:/home/ubuntu/Project/
+      - ./:/tmp/Project/

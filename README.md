@@ -17,6 +17,8 @@ If the code runs successfully, the results will be placed in ```\LSTM-COX-CODE\s
 
 Email: <Guanghui.liu@oswego.edu>.
 
-## On Docker Container
+## On The Docker Container and Development
 
-For easy development and access, a standardized Docker Container has been provided. 
+If you would like to develop this software, you will want to use the Docker Container provided. Since large amounts of this codebase is deprecated, a very specific development environment must be specified to ensure correct running, development, and deployment of this software.
+
+This software utilizes ```conda``` and ```renv``` in conjunction with ```docker``` to fabricate a reproducible environment. Please read the documentation of conda and renv, so that you may have an operational understanding of how to develop with these pieces of software.

@@ -1,21 +1,24 @@
-name: ML_ORD
+name: "ML_ORD"
 channels:
   - conda-forge
+  - bioconda
+  - pytorch
   - defaults
 dependencies:
-  - python=3.8
+  - "python<=3.10"
+  - r-base=3.6
+  - r-renv
   - pandas
-  - numpy
-  - keras
+  - "numpy<1.26.0"
   - scikit-learn
   - lifelines
   - scikeras
-  - theano
-  - tensorflow
-  - anaconda
-  - libpython
-  - m2w64-toolchain
+  - pytensor
+  - "pytorch>=1.4"
   - matplotlib
+  - r-essentials
   - pip
   - pip:
-    - torch
+    - "numpy<1.26.0"
+    - tensorflow-cpu
+prefix: /opt/miniconda3/envs/ML_ORD

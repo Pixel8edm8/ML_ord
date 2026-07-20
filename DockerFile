@@ -1,18 +1,16 @@
 #syntax=docker/dockerfile:1
 #check=error=true
-FROM python:3.7
+# This is a development environment intended to be used for ther current ML_ORD project.
+FROM anaconda/miniconda:26.5.3
+ENV CONDA_PLUGINS_AUTO_ACCEPT_TOS=true
 # TODO: Make separate build stages for a development environment and a "release" environment.
-WORKDIR /home/ubuntu/Project/ML_ordCOX/
-COPY requirements.txt ./
+COPY environment.yml .
 # Install Python 3.7, R, and necessary C/C++ system dependencies for R packages
 ENV DEBIAN_FRONTEND=non-interactive
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt update && \
     apt install -y --no-install-recommends \
-    software-properties-common \
-    r-base \
-    r-base-dev \
     build-essential \
     g++ \
     libcurl4-openssl-dev \
@@ -26,21 +24,14 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     libtiff5-dev \
     gpg-agent \
     libjpeg-dev \
+    ca-certificates \
     git \
+    curl \
     git-lfs && \
     apt clean
-RUN git lfs install
-# Install Bioconductor and local packages
-RUN Rscript -e "options(repos = c(CRAN = 'https://packagemanager.posit.co/cran/2020-08-07'), warn=2, renv.consent=TRUE); if (!requireNamespace('renv', quietly = TRUE)) install.packages('renv'); renv::consent(provided=TRUE); renv::init(bioconductor="3.11"); renv::snapshot(prompt = FALSE)"
-# Install CRAN packages with an explicit repository URL
-# Setup Python virtual environment
-RUN python -m venv .venv
-RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
-./.venv/bin/pip install -r ./requirements.txt
-ENV PATH="/home/ubuntu/Project/ML_ordCOX/.venv/bin:$PATH"
-# RUN Rscript ./mRNA_data/run_test_lmQCM_mRNA.R
-# RUN Rscript ./methylation_data/run_test_lmQCM_brca_methylation.R
-# RUN Rscript ./methylation-mRNA_all_lmQCM_merge.r
-# RUN cp brca_Surv_data_methylation* ../survival_analysis/
-# WORKDIR /home/ubuntu/Project/survival_analysis
+RUN conda update conda && \ 
+    conda config --set channel_priority flexible && \ 
+    conda create --file environment.yml -n ML_ORD -v && \
+    conda init && \ 
+    conda run -n ML_ORD Rscript -e "options(repos = c(warn=2, renv.consent=TRUE)); renv::restore()"
 CMD ["tail", "-f", "/dev/null"]

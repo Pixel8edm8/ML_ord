@@ -14,9 +14,9 @@ import numpy as np
 from keras.layers import Dense
 import tensorflow as tf
 from sklearn.model_selection import KFold
-import theano
+import pytensor
 from keras.layers import Dropout
-from keras import backend as K
+from keras import ops as K
 from keras.layers import LSTM, Input
 from keras.layers import TimeDistributed
 from keras.layers import Bidirectional
@@ -54,14 +54,14 @@ data_mRNA = data_mRNA.reshape(m2,1,n2)
 ytime=np.transpose(np.array(kidtx["V2.x"])) # only V1=time;
 ystatus= np.transpose(np.array(kidtx["V3.x"])) #only erged_data33=status
 ## Build model structure
-from keras.utils import np_utils
-ystatus2= np_utils.to_categorical(ystatus)
+from keras.utils import to_categorical
+ystatus2= to_categorical(ystatus)
 
 def neg_log_pl(y_true, y_pred):
 	sorting = tf.nn.top_k(y_true[:, 0], k =int(k_n.get_value()))
-	xbeta = K.gather(y_pred[:, 0], indices = sorting.indices) #tf.gather()用来取出tensor中指定索引位置的元素。
+	xbeta = K.take(y_pred[:, 0], indices = sorting.indices, axis = 0) #tf.gather()用来取出tensor中指定索引位置的元素。
 	risk = K.exp(xbeta)      
-	event = K.gather(y_true[:, 1], indices = sorting.indices)
+	event = K.take(y_true[:, 1], indices = sorting.indices, axis = 0)
 	denom = K.cumsum(risk) #这个函数的功能是返回给定axis上的累计和
 	terms = xbeta - K.log(denom)
 	loglik = K.cast(event, dtype = terms.dtype) * terms   #cast将x的数据格式转化成dtype
@@ -95,9 +95,9 @@ def R_set(x):
 def neg_log_pl_1(y_true, y_pred):
 	
 	sorting = tf.nn.top_k(y_true[:, 0], k =int(k_n.get_value()))
-	ytime = K.gather(y_true[:, 0], indices = sorting.indices)
-	yevent = K.gather(y_true[:, 1], indices = sorting.indices)
-	xbeta = K.gather(y_pred[:, 0], indices = sorting.indices) #tf.gather()用来取出tensor中指定索引位置的元素。
+	ytime = K.take(y_true[:, 0], indices = sorting.indices, axis = 0)
+	yevent = K.take(y_true[:, 1], indices = sorting.indices, axis = 0)
+	xbeta = K.take(y_pred[:, 0], indices = sorting.indices, axis = 0) #tf.gather()用来取出tensor中指定索引位置的元素。
 	risk = K.exp(xbeta)
 	matrix_risk = tf.zeros([int(k_n.get_value())],tf.float32)
 	kk_ytime_train =k_ytime_train.get_value()
@@ -130,7 +130,7 @@ def c_index3(month,risk, status):
 
 def ordinal_loss0 (y_true, y_pred):
 	sorting = tf.nn.top_k(y_true[:, 0], k =int(k_n.get_value()))
-	xbeta = K.gather(y_pred[:, 0], indices = sorting.indices) #tf.gather()用来取出tensor中指定索引位置的元素。
+	xbeta = K.take(y_pred[:, 0], indices = sorting.indices, axis = 0) #tf.gather()用来取出tensor中指定索引位置的元素。
 	risk = K.exp(xbeta)
 	matrix_risk = tf.zeros([int(k_n.get_value())],tf.float32)
 	Hj = k_ordinal_H.get_value()
@@ -299,7 +299,7 @@ class CustomMultiLossLayer(Layer):
 		ys_true = inputs[:self.nb_outputs]
 		ys_pred = inputs[self.nb_outputs:]
 		loss = self.multi_loss(ys_true, ys_pred)
-		self.add_loss(loss, inputs=inputs)
+		self.add_loss(loss)
 		# We won't actually use the output.
 		return K.concatenate(inputs, -1)
 #############################################################################################################
@@ -327,12 +327,12 @@ for ij in range(10):
 		output_dimA = 1
 		n1 = y_train.shape[0]
 		
-		k_n = theano.shared(n1,borrow=True)
-		k_ytime_train = theano.shared(ytime_train,borrow=True)
-		k_ystatus_train = theano.shared(ystatus_train,borrow=True)
-		N = theano.shared(n1,borrow=True)
+		k_n = pytensor.shared(n1,borrow=True)
+		k_ytime_train = pytensor.shared(ytime_train,borrow=True)
+		k_ystatus_train = pytensor.shared(ystatus_train,borrow=True)
+		N = pytensor.shared(n1,borrow=True)
 		R_matrix = np.zeros([n1, n1], dtype=int)
-		R_matrix =theano.shared(R_matrix,borrow=True)
+		R_matrix =pytensor.shared(R_matrix,borrow=True)
 ##############################################
 		
 		Y_hazard0=y_train[:,0]
@@ -345,9 +345,9 @@ for ij in range(10):
 		ordinal_n = np.asarray([len(h) for h in H0])
 		Hj=sum(H0[0:],[])
 		
-		k_ordinal_H = theano.shared(np.asarray(Hj),borrow=True)
-		k_ordinal_t = theano.shared(t0,borrow=True)
-		k_ordinal_n = theano.shared(ordinal_n,borrow=True)
+		k_ordinal_H = pytensor.shared(np.asarray(Hj),borrow=True)
+		k_ordinal_t = pytensor.shared(t0,borrow=True)
+		k_ordinal_n = pytensor.shared(ordinal_n,borrow=True)
 #########################################################################################################################       
 	# Build model structure
 		# gene Only
